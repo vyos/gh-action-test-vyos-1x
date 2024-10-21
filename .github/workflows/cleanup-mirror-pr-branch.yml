@@ -1,0 +1,24 @@
+name: Cleanup feature branch after merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+        - current
+
+jobs:
+  delete_branch:
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'mirror/bp/') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Delete branch
+        run: |
+          branch=${{ github.event.pull_request.head.ref }}
+          repo=${{ github.repository }}
+          unset GH_TOKEN
+          echo "${{ secrets.PAT }}" | gh auth login --with-token
+          gh api -X DELETE "repos/${repo}/git/refs/heads/${branch}"
