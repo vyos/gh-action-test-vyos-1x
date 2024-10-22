@@ -5,14 +5,14 @@ on:
       types:
         - closed
       branches:
-        - circinus
+        - current
 
 jobs:
   trigger-PR:
     uses: vyos/.github/.github/workflows/trigger-pr.yml@current
     with:
-      source_branch: 'circinus'
-      target_branch: 'circinus'
+      source_branch: 'current'
+      target_branch: 'current'
     secrets:
       REMOTE_REPO: ${{ secrets.REMOTE_REPO }}
       REMOTE_OWNER: ${{ secrets.REMOTE_OWNER }}
