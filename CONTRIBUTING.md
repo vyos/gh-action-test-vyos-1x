@@ -19,6 +19,7 @@ file(s) history by invoking git log path/to/file.txt.
 
 ### Prepare patch/commit
 
+
 In a big system, such as VyOS, that is comprised of multiple components, it’s
 impossible to keep track of all the changes and bugs/feature requests in one’s
 head. We use a bugtracker named Phorge (formerly known Phabricator) for it (“issue tracker” would
