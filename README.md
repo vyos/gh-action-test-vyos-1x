@@ -11,6 +11,10 @@ to VyOS, read on.
 
 ## Package layout
 
+
+
+
+
 ```
 data                   # Jinja2 templates
 debian                 # Our package build system
