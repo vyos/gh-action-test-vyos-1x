@@ -9,7 +9,7 @@ on:
 
 jobs:
   trigger-PR:
-    uses: vyos/.github/.github/workflows/trigger-pr.yml@current
+    uses: vyos/.github/.github/workflows/trigger-pr.yml@T6798-pr-mirror-check
     with:
       source_branch: 'current'
       target_branch: 'current'
