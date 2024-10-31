@@ -1,6 +1,7 @@
 # Contributing to VyOS
 
 You wan't to help us improve VyOS? This is awesome!
+Test update
 
 We accept any kind of Pull Requests on GitHub. In order to get your changes into
 the main repository as smooth as possible please take yourself some time and
@@ -83,7 +84,7 @@ development environments.
   bugs in a single commit. If you already worked on multiple fixes in the same
   file use git add –patch to only add the parts related to the one issue into
   your upcoming commit.
-  
+
 ## Bug Report/Issue
 Issues or bugs are found in any software project. VyOS is not an exception.
 
