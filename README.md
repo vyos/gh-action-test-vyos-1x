@@ -14,8 +14,6 @@ to VyOS, read on.
 
 
 
-
-
 ```
 data                   # Jinja2 templates
 debian                 # Our package build system
