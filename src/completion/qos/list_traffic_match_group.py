@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from vyos.config import Config
+import json
 
 
 def get_qos_traffic_match_group():
@@ -32,4 +33,3 @@ def get_qos_traffic_match_group():
 if __name__ == "__main__":
     groups = get_qos_traffic_match_group()
     print(" ".join(groups))
-
