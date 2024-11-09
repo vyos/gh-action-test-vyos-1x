@@ -21,6 +21,7 @@
 #        them to the config if the kernel has them set (unless its a live boot)
 
 from vyos.ethtool import Ethtool
+import json
 from vyos.configtree import ConfigTree
 from vyos.system.image import is_live_boot
 

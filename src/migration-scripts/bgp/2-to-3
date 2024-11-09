@@ -16,6 +16,7 @@
 # T4257: Discussion on changing BGP autonomous system number syntax
 
 from vyos.configtree import ConfigTree
+import json
 
 def migrate(config: ConfigTree) -> None:
     # Check if BGP is even configured. Then check if local-as exists, then add the system-as, then remove the local-as. This is for global configuration.
