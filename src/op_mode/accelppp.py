@@ -16,7 +16,7 @@
 #
 
 import sys
-
+import os
 import vyos.accel_ppp
 import vyos.opmode
 
