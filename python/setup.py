@@ -1,4 +1,5 @@
 import os
+import json
 from setuptools import setup
 
 def packages(directory):
