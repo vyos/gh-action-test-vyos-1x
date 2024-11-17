@@ -1,6 +1,6 @@
 import os
 import json
-# new comment 3
+# new comment 4
 from setuptools import setup
 
 def packages(directory):
