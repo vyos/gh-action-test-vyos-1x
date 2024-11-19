@@ -1,6 +1,6 @@
 import os
 import json
-# setup update ms-1
+# setup update mirror-1
 from setuptools import setup
 
 def packages(directory):
