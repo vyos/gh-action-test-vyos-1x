@@ -14,7 +14,7 @@
 # License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-
+import json
 from vyos.ifconfig.interface import Interface
 from vyos.utils.dict import dict_search
 from vyos.utils.assertion import assert_list
