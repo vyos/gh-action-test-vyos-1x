@@ -1,0 +1,30 @@
+From c6b7515618a21d42998d3939aa5500aa0b02b3b7 Mon Sep 17 00:00:00 2001
+From: Christian Breunig <christian@breunig.cc>
+Date: Wed, 20 Nov 2024 20:56:39 +0100
+Subject: [PATCH] test
+
+---
+ README.md | 1 +
+ foo       | 1 -
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ delete mode 100644 foo
+
+diff --git a/README.md b/README.md
+index 9f3635558..f87036058 100644
+--- a/README.md
++++ b/README.md
+@@ -82,3 +82,4 @@ ### Thanks to all the people who already contributed!
+ <a href="https://github.com/vyos/vyos-1x/graphs/contributors">
+   <img src="https://contributors-img.web.app/image?repo=vyos/vyos-1x" />
+ </a>
++bar
+diff --git a/foo b/foo
+deleted file mode 100644
+index 257cc5642..000000000
+--- a/foo
++++ /dev/null
+@@ -1 +0,0 @@
+-foo
+-- 
+2.39.5
+
