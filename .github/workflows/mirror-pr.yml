@@ -1,0 +1,68 @@
+name: Create Mirror PR
+
+on:
+    pull_request_target:
+      types:
+        - closed
+      branches:
+        - current
+
+env:
+  pr_merge_branch_prefix:
+  GH_TOKEN: ${{ secrets.PAT }}
+
+jobs:
+  Mirror-PR:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+
+    steps:
+    - name: Ser vars
+      run: |
+        source_repo="${{ github.repository }}"
+        echo "source_repo=${source_repo}" >> $GITHUB_ENV
+        target_repo=$(echo $source_repo | sed 's/^[^\/]*\//vyos-networks\//')
+        echo "target_repo=${target_repo}" >> $GITHUB_ENV
+        pr_source_branch=$(git branch --show-current)
+        echo "pr_source_branch=${pr_source_branch}" >> $GITHUB_ENV
+        echo "pr_target_branch=${pr_source_branch}" >> $GITHUB_ENV
+        pr_number=${{ github.event.pull_request.number }}
+        echo "pr_number=${pr_number}" >> $GITHUB_ENV
+        pr_title="${{ github.event.pull_request.title }}"
+        echo "pr_title=${pr_title}" >> $GITHUB_ENV
+        echo "pr_merge_branch=mirror/current/$pr_number" >> $GITHUB_ENV
+
+    - name: Get PR merge commit
+      run: |
+        mkdir -p /tmp/public
+        cd /tmp/public
+        git init
+        git remote add origin https://github.com/${source_repo}.git
+        git fetch
+        git checkout -b $pr_source_branch
+        pr_info=$(gh pr view $pr_number --json mergeCommit,commits)
+        merge_commit=$(echo $pr_info | jq -r '.mergeCommit.oid')
+        echo "merge_commit=${merge_commit}" >> $GITHUB_ENV
+
+    - name: Create merge branch from merge commit
+      run: |
+        cd /tmp/public
+        git checkout -b $pr_merge_branch $merge_commit
+
+    - name: Push merge branch to target repo
+      run: |
+        cd /tmp/public
+        git remote add target https://github.com/${target_repo}.git
+        git push target $pr_merge_branch
+
+    - name: Create PR from merge branch to target branch
+      run: |
+        gh pr create --repo ${target_repo} --head $pr_merge_branch --base $pr_target_branch --title "${pr_title}" --body "Automated PR from $pr_merge_branch to $pr_target_branch"
+
+
+
+
+
+
