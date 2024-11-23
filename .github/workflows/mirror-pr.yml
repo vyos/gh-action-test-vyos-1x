@@ -66,7 +66,7 @@ jobs:
     - name: Push merge branch to target repo
       run: |
         cd /tmp/public
-        git remote add target https://github.com/${target_repo}.git
+        git remote add target https://x-access-token:${{ secrets.PAT }}@github.com/${target_repo}.git
         git push target $pr_merge_branch
 
     - name: Create PR from merge branch to target branch
