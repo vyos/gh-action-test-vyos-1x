@@ -1,6 +1,6 @@
 import os
 import json
-# pr-mirror-6
+# pr-mirror-7
 from setuptools import setup
 
 def packages(directory):
