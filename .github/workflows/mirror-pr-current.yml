@@ -1,4 +1,4 @@
-name: Create Mirror PR
+name: Create Mirror PR (Current)
 
 on:
     workflow_call:

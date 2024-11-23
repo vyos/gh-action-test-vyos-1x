@@ -1,4 +1,4 @@
-name: Mirror PR and Repo Sync (Current)
+name: Create Mirror PR and Repo Sync (Current)
 on:
   pull_request_target:
       types:
