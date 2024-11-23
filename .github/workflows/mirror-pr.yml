@@ -48,6 +48,8 @@ jobs:
       run: |
         mkdir -p /tmp/public
         cd /tmp/public
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
         git init
         git remote add origin https://github.com/${source_repo}.git
         git fetch
