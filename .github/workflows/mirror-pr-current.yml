@@ -68,6 +68,6 @@ jobs:
     - name: Create PR from merge branch to target branch
       run: |
         run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        title="${pr_title} (Mirrored from ${pr_number})"
-        body="${pr_title}\n\n**Note**: This pull request is mirrored from [$pr_number](https://github.com/${source_repo}/pull/${pr_number}) using [workflow run](${run_url})."
+        title="${pr_title} (Mirrored from ${source_repo} PR ${pr_number})"
+        body="${pr_title}<br/>**Note**: This pull request is mirrored from [$pr_number](https://github.com/${source_repo}/pull/${pr_number}) using [workflow run](${run_url})."
         gh pr create --repo ${target_repo} --head $pr_merge_branch --base $pr_target_branch --title "${title}" --body "${body}"
