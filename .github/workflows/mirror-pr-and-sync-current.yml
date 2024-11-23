@@ -17,5 +17,5 @@ jobs:
   repo-sync-current:
     name: Repo Sync (Current)
     uses: ./.github/workflows/repo-sync-current.yml
-    needs: [mirror_pr_current]
+    needs: [mirror-pr-current]
     secrets: inherit
