@@ -1,19 +1,15 @@
 name: Create Mirror PR
 
 on:
-    pull_request_target:
-      types:
-        - closed
-      branches:
-        - current
+    workflow_call:
     workflow_dispatch:
       inputs:
         pr_title:
           description: 'Title of the PR'
-          required: true
+          required: false
         pr_number:
           description: 'Number of the PR'
-          required: true
+          required: false
 
 env:
   GH_TOKEN: ${{ secrets.PAT }}
