@@ -1,15 +1,19 @@
 name: Create Mirror PR (Current)
 
 on:
-    workflow_call:
+    pull_request_target:
+      types:
+        - closed
+      branches:
+        - current
     workflow_dispatch:
       inputs:
         pr_title:
           description: 'Title of the PR'
-          required: false
+          required: true
         pr_number:
           description: 'Number of the PR'
-          required: false
+          required: true
 
 env:
   GH_TOKEN: ${{ secrets.PAT }}
@@ -67,4 +71,7 @@ jobs:
 
     - name: Create PR from merge branch to target branch
       run: |
-        gh pr create --repo ${target_repo} --head $pr_merge_branch --base $pr_target_branch --title "${pr_title}" --body "Automated PR from $pr_merge_branch to $pr_target_branch"T
+        run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        title="${pr_title} (Mirrored from ${pr_number})"
+        body="${pr_title}\n\n**Note**: This pull request is mirrored from [$pr_number](https://github.com/${source_repo}/pull/${pr_number}) using [workflow run](${run_url})."
+        gh pr create --repo ${target_repo} --head $pr_merge_branch --base $pr_target_branch --title "${title}" --body "${body}"
