@@ -44,7 +44,7 @@ jobs:
         echo "pr_title=${pr_title}" >> $GITHUB_ENV
         echo "pr_merge_branch=mirror/current/$pr_number" >> $GITHUB_ENV
 
-    - name: Get PR merge commit
+    - name: Get PR last commit
       run: |
         mkdir -p /tmp/public
         cd /tmp/public
@@ -54,14 +54,14 @@ jobs:
         git remote add origin https://github.com/${source_repo}.git
         git fetch
         git checkout -b $pr_source_branch
-        pr_info=$(gh pr view $pr_number --json mergeCommit,commits)
-        merge_commit=$(echo $pr_info | jq -r '.mergeCommit.oid')
-        echo "merge_commit=${merge_commit}" >> $GITHUB_ENV
+        pr_info=$(gh pr view $pr_number --json commits)
+        last_commit=$(echo $pr_info | jq -r '.commits[-1].oid')
+        echo "last_commit=${last_commit}" >> $GITHUB_ENV
 
-    - name: Create merge branch from merge commit
+    - name: Create merge branch from last commit
       run: |
         cd /tmp/public
-        git checkout -b $pr_merge_branch $merge_commit
+        git checkout -b $pr_merge_branch $last_commit
 
     - name: Push merge branch to target repo
       run: |
@@ -71,4 +71,4 @@ jobs:
 
     - name: Create PR from merge branch to target branch
       run: |
-        gh pr create --repo ${target_repo} --head $pr_merge_branch --base $pr_target_branch --title "${pr_title}" --body "Automated PR from $pr_merge_branch to $pr_target_branch"
+        gh pr create --repo ${target_repo} --head $pr_merge_branch --base $pr_target_branch --title "${pr_title}" --body "Automated PR from $pr_merge_branch to $pr_target_branch"T
