@@ -50,9 +50,15 @@ jobs:
         git remote add origin https://github.com/${source_repo}.git
         git fetch
         git checkout -b $pr_source_branch
-        pr_info=$(gh pr view $pr_number --json commits)
+        pr_info=$(gh pr view $pr_number --json commits,mergeCommit)
         last_commit=$(echo $pr_info | jq -r '.commits[-1].oid')
-        echo "last_commit=${last_commit}" >> $GITHUB_ENV
+        merge_commit=$(echo $pr_info | jq -r '.mergeCommit.oid')
+        merge_commit_message=$(git log -1 --pretty=%B $merge_commit)
+        if [[ "$merge_commit_message" == "Merge pull request #${pr_number} from"* ]]; then
+          echo "last_commit=${last_commit}" >> $GITHUB_ENV
+        else
+          echo "last_commit=${merge_commit}" >> $GITHUB_ENV
+        fi
 
     - name: Create merge branch from last commit
       run: |
@@ -69,5 +75,5 @@ jobs:
       run: |
         run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         title="${pr_title} (Mirrored from ${source_repo} PR ${pr_number})"
-        body="${pr_title}<br/>**Note**: This pull request is mirrored from [$pr_number](https://github.com/${source_repo}/pull/${pr_number}) using [workflow run](${run_url})."
+        body="${pr_title}<br/>**Note**: This pull request is mirrored from PR [$pr_number](https://github.com/${source_repo}/pull/${pr_number}) using [workflow run](${run_url})."
         gh pr create --repo ${target_repo} --head $pr_merge_branch --base $pr_target_branch --title "${title}" --body "${body}"
