@@ -1,7 +1,7 @@
 # Contributing to VyOS
 
 You wan't to help us improve VyOS? This is awesome!
-Test update 19-m-3
+Test update 21
 
 We accept any kind of Pull Requests on GitHub. In order to get your changes into
 the main repository as smooth as possible please take yourself some time and
