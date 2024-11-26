@@ -95,3 +95,5 @@ bar
 baz
 baz
 baz
+foo
+foo
