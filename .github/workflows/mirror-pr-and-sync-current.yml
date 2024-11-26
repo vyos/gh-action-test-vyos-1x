@@ -4,10 +4,14 @@ on:
       types:
         - closed
       branches:
+        - current
 
 permissions:
   pull-requests: write
   contents: write
+concurrency:
+  group: mirror-pr-and-sync-current
+  cancel-in-progress: false
 jobs:
   mirror-pr-current:
     name: Mirror PR (Current)

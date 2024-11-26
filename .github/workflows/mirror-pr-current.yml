@@ -22,6 +22,11 @@ jobs:
       contents: write
 
     steps:
+    - name: Bullfrog Secure Runner
+      uses: bullfrogsec/bullfrog@v0
+      with:
+        egress-policy: audit
+
     - name: Checkout
       uses: actions/checkout@v4
 
