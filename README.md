@@ -5,7 +5,7 @@ reason, which made it hard to navigate or write meaningful changelogs. As the
 code undergoes rewrite in the new style in VyOS 1.2.0+, we consolidate the
 rewritten code in this package.
 
-PR-Mirror-test-fork-21
+PR-Mirror-test-1
 
 
 If you just want to build a VyOS image, the repository you want is
@@ -83,12 +83,12 @@ be placed into the vyos-1x-smoketest package.
   <img src="https://contributors-img.web.app/image?repo=vyos/vyos-1x" />
 </a>
 feature
-  __             
- / _| ___   ___  
-| |_ / _ \ / _ \ 
+  __
+ / _| ___   ___
+| |_ / _ \ / _ \
 |  _| (_) | (_) |
-|_|  \___/ \___/ 
-                 
+|_|  \___/ \___/
+
 
 
 bar
