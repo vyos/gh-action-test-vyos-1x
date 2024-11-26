@@ -98,3 +98,4 @@ baz
 foo
 foo
 foo
+foo
