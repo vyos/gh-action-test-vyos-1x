@@ -93,3 +93,4 @@ feature
 
 bar
 baz
+baz
