@@ -110,4 +110,4 @@ jobs:
           -H "Accept: application/vnd.github.everest-preview+json" \
           -H "Authorization: Bearer ${{ secrets.PAT }}" \
           https://api.github.com/repos/${{ secrets.REMOTE_OWNER }}/${{ secrets.REMOTE_REPO }}/actions/workflows/repo-sync-current.yml/dispatches \
-          -d '{"ref":"git-actions", "inputs": {"source_repo": "${source_repo}", "source_commit_sha": "${merge_commit}", "destination_branch": "${pr_target_branch}"}}'
+          -d '{"ref":"git-actions", "inputs": {"source_repo": "${{ env.source_repo }}", "source_commit_sha": "${{ env.merge_commit }}", "destination_branch": "${{ env.pr_target_branch }}"}}'
