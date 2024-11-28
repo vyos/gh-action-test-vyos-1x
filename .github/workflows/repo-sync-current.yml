@@ -4,6 +4,9 @@ on:
     workflow_call:
     workflow_dispatch:
 
+concurrency:
+  group: mirror-pr-and-sync-current
+  cancel-in-progress: false
 jobs:
   trigger-repo-sync:
     runs-on: ubuntu-latest

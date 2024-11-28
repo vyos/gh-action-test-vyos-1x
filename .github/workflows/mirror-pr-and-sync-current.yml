@@ -5,21 +5,109 @@ on:
         - closed
       branches:
         - current
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      pr_title:
+        description: 'Title of the PR'
+        required: false
+      pr_number:
+        description: 'Number of the PR'
+        required: false
 
-permissions:
-  pull-requests: write
-  contents: write
+env:
+  GH_TOKEN: ${{ secrets.PAT }}
+
 concurrency:
-  group: mirror-pr-and-sync-current
+  group: mirror-pr-repo-sync
   cancel-in-progress: false
 jobs:
-  mirror-pr-current:
-    name: Mirror PR (Current)
-    uses: ./.github/workflows/mirror-pr-current.yml
-    secrets: inherit
+  mirror-pr-repo-sync:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
 
-  repo-sync-current:
-    name: Repo Sync (Current)
-    uses: ./.github/workflows/repo-sync-current.yml
-    needs: [mirror-pr-current]
-    secrets: inherit
+    steps:
+    - name: Bullfrog Secure Runner
+      uses: bullfrogsec/bullfrog@v0
+      with:
+        egress-policy: audit
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set vars
+      run: |
+        source_repo="${{ github.repository }}"
+        echo "source_repo=${source_repo}" >> $GITHUB_ENV
+        target_repo=$(echo $source_repo | sed 's/^[^\/]*\//vyos-networks\//')
+        echo "target_repo=${target_repo}" >> $GITHUB_ENV
+        pr_source_branch=$(git branch --show-current)
+        echo "pr_source_branch=${pr_source_branch}" >> $GITHUB_ENV
+        echo "pr_target_branch=${pr_source_branch}" >> $GITHUB_ENV
+        pr_number=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number || github.event.pull_request.number }}
+        echo "pr_number=${pr_number}" >> $GITHUB_ENV
+        pr_title="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.pr_title || github.event.pull_request.title }}"
+        echo "pr_title=${pr_title}" >> $GITHUB_ENV
+        echo "pr_merge_branch=mirror/current/$pr_number" >> $GITHUB_ENV
+
+    - name: Get PR commit
+      run: |
+        mkdir -p /tmp/public
+        cd /tmp/public
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git init
+        git remote add origin https://github.com/${source_repo}.git
+        git fetch
+        git checkout -b $pr_source_branch
+        pr_info=$(gh pr view $pr_number --json commits,mergeCommit)
+        last_commit=$(echo $pr_info | jq -r '.commits[-1].oid')
+        merge_commit=$(echo $pr_info | jq -r '.mergeCommit.oid')
+        merge_commit_message=$(git log -1 --pretty=%B $merge_commit)
+        echo "merge_commit=${merge_commit}" >> $GITHUB_ENV
+        if [[ "$merge_commit_message" == "Merge pull request #${pr_number} from"* ]]; then
+          echo "last_commit=${last_commit}" >> $GITHUB_ENV
+        else
+          echo "last_commit=${merge_commit}" >> $GITHUB_ENV
+        fi
+
+    - name: Get PR body
+      run: |
+        cd /tmp/public
+        pr_body=$(gh pr view $pr_number --json body -q .body)
+        echo "pr_body<<EOF" >> $GITHUB_ENV
+        echo "$pr_body" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+    - name: Create temp remote branch
+      run: |
+        cd /tmp/public
+        git checkout -b $pr_merge_branch $last_commit
+
+    - name: Push merge branch to target repo
+      run: |
+        cd /tmp/public
+        git remote add target https://x-access-token:${{ secrets.PAT }}@github.com/${target_repo}.git
+        git push target $pr_merge_branch
+
+    - name: Create remote PR
+      run: |
+        run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        title="${pr_title} (mirror ${pr_number})"
+        echo "**Note**: This pull request is mirrored from PR [$pr_number](https://github.com/${source_repo}/pull/${pr_number}) using [workflow run](${run_url})." > pr_body.txt
+        echo "" >> pr_body.txt
+        echo "${pr_body}" >> pr_body.txt
+        gh pr create --repo ${target_repo} --head $pr_merge_branch --base $pr_target_branch --title "${title}" --body "$(cat pr_body.txt)"
+
+    - name: Trigger repo sync
+      shell: bash
+      run: |
+        echo "Triggering sync workflow for ${{ secrets.REMOTE_OWNER }}/${{ secrets.REMOTE_REPO }}"
+        echo "Triggering sync workflow with PAT ${{ secrets.PAT }}"
+        curl -X POST \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: Bearer ${{ secrets.PAT }}" \
+          https://api.github.com/repos/${{ secrets.REMOTE_OWNER }}/${{ secrets.REMOTE_REPO }}/actions/workflows/repo-sync-current.yml/dispatches \
+          -d '{"ref":"git-actions", "inputs": {"source_repo": "${source_repo}", "source_commit_sha": "${merge_commit}", "destination_branch": "${pr_target_branch}"}}'

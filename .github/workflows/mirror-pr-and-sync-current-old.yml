@@ -1,0 +1,25 @@
+name: Create Mirror PR and Repo Sync (Current) Backup
+on:
+  pull_request_target:
+      types:
+        - closed
+      branches:
+        - current
+
+permissions:
+  pull-requests: write
+  contents: write
+concurrency:
+  group: mirror-pr-and-sync-current
+  cancel-in-progress: false
+jobs:
+  mirror-pr-current:
+    name: Mirror PR (Current)
+    uses: ./.github/workflows/mirror-pr-current.yml
+    secrets: inherit
+
+  repo-sync-current:
+    name: Repo Sync (Current)
+    uses: ./.github/workflows/repo-sync-current.yml
+    needs: [mirror-pr-current]
+    secrets: inherit
