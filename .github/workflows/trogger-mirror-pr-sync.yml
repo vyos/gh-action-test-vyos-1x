@@ -14,6 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   trigger-mirror-pr-sync:
+    if: ${{ github.repository_owner == 'vyos' }}
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
