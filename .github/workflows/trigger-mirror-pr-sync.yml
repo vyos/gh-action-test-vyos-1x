@@ -7,7 +7,7 @@ on:
         - current
 
 env:
-  GH_TOKEN: ${{ secrets.PR_MIRROR_REPO_SYNC }}
+  GH_TOKEN: ${{ secrets.PAT }}
 
 concurrency:
   group: trigger-mirror-pr-sync
@@ -30,9 +30,9 @@ jobs:
       shell: bash
       run: |
         echo "Triggering sync workflow for ${{ secrets.REMOTE_OWNER }}/${{ secrets.REMOTE_REPO }}"
-        echo "Triggering sync workflow with PAT ${{ secrets.PR_MIRROR_REPO_SYNC }}"
+        echo "Triggering sync workflow with PAT ${{ secrets.PAT }}"
         curl -X POST \
           -H "Accept: application/vnd.github.everest-preview+json" \
-          -H "Authorization: Bearer ${{ secrets.PR_MIRROR_REPO_SYNC }}" \
+          -H "Authorization: Bearer ${{ secrets.PAT }}" \
           https://api.github.com/repos/${{ secrets.REMOTE_OWNER }}/${{ secrets.REMOTE_REPO }}/actions/workflows/mirror-pr-and-sync.yml/dispatches \
           -d '{"ref":"git-actions", "inputs": {"pr_number": "${{  github.event.pull_request.number }}", "sync_branch": "current"}}'
