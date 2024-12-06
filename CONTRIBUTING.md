@@ -1,7 +1,7 @@
 # Contributing to VyOS
 
 You wan't to help us improve VyOS? This is awesome!
-co test 1
+test 2
 
 We accept any kind of Pull Requests on GitHub. In order to get your changes into
 the main repository as smooth as possible please take yourself some time and
