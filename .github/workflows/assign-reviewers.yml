@@ -1,0 +1,19 @@
+name: "Assign Reviewers"
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, locked]
+    branches:
+      - current
+
+permissions:
+  pull-requests: write
+
+jobs:
+  assign-reviewers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Assign Reviwers Team"
+        uses: rowi1de/auto-assign-review-teams@v1.1.3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          teams: "${{ github.repository_owner }}/reviewers"
