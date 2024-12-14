@@ -1,0 +1,26 @@
+name: Auto-sync equuleus
+
+# File: .github/workflows/repo-sync-equuleus.yml
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [sync-request]
+
+jobs:
+  repo-sync:
+    if: ${{ github.repository_owner != 'vyos' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+
+    - name: repo-sync-equuleus
+      uses: repo-sync/github-sync@v2
+      with:
+        source_repo: "https://github.com/vyos/vyos-1x"
+        source_branch: "equuleus"
+        destination_branch: "equuleus"
+        github_token: ${{ secrets.PAT }}

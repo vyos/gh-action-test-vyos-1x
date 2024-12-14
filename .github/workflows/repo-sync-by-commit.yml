@@ -1,0 +1,107 @@
+name: Repo-sync by commit
+
+on:
+  workflow_call:
+    inputs:
+      source_repo:
+        description: 'source_repo'
+        required: true
+        type: string
+      source_commit_sha:
+        description: 'source_commit_sha'
+        required: true
+        type: string
+      destination_branch:
+        description: 'destination_branch'
+        required: false
+        default: 'current'
+        type: string
+  workflow_dispatch:
+    inputs:
+      source_repo:
+        description: 'source_repo'
+        required: true
+        type: string
+      source_commit_sha:
+        description: 'source_commit_sha'
+        required: true
+        type: string
+      destination_branch:
+        description: 'destination_branch'
+        required: false
+        default: 'current'
+        type: string
+  repository_dispatch:
+    types: [sync-request]
+
+env:
+  SOURCE_REPO: ${{ github.event.inputs.source_repo }}
+  SOURCE_COMMIT_SHA: ${{ github.event.inputs.source_commit_sha }}
+  DESTINATION_BRANCH: ${{ github.event.inputs.destination_branch }}
+  GITHUB_TOKEN: ${{ secrets.PAT }}
+
+concurrency:
+  group: repo-sync-by-commit-${{ github.event.inputs.destination_branch }}
+  cancel-in-progress: false
+jobs:
+  repo-sync:
+    if: ${{ github.repository_owner != 'vyos' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+
+    - name: Repo sync
+      shell: bash
+      run: |
+        set -e
+        if [[ -z "$SOURCE_REPO" ]]; then
+          echo "Missing \$SOURCE_REPO"
+          exit 1
+        fi
+
+        if [[ -z "$SOURCE_COMMIT_SHA" ]]; then
+          echo "Missing \$SOURCE_COMMIT_SHA"
+          exit 1
+        fi
+
+        if [[ -z "$DESTINATION_BRANCH" ]]; then
+          echo "Missing \$DESTINATION_BRANCH"
+          exit 1
+        fi
+
+        if ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'
+        then
+          echo "SOURCE_REPO does not seem to be a valid git URI, assuming it's a GitHub repo"
+          echo "Originally: $SOURCE_REPO"
+          SOURCE_REPO="https://github.com/${SOURCE_REPO}.git"
+          echo "Now: $SOURCE_REPO"
+        fi
+
+        echo "SOURCE_REPO=$SOURCE_REPO"
+        echo "SOURCE_COMMIT_SHA=$SOURCE_COMMIT_SHA"
+        echo "DESTINATION_BRANCH=$DESTINATION_BRANCH"
+
+        git config --unset-all http."https://github.com/".extraheader || :
+
+        echo "Resetting origin to: https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
+        git remote set-url origin "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
+
+        echo "Adding tmp_source $SOURCE_REPO"
+        git remote add tmp_source "$SOURCE_REPO"
+
+        echo "Fetching tmp_source"
+        git fetch tmp_source --quiet
+        git remote --verbose
+
+        # Exclude CODEOWNERS file from being overwritten
+        git checkout tmp_source/${SOURCE_COMMIT_SHA} -- . ':!CODEOWNERS'
+
+        echo "Pushing changes from tmp_source to origin"
+        git push origin "${SOURCE_COMMIT_SHA}:refs/heads/${DESTINATION_BRANCH}" --force
+
+        echo "Removing tmp_source"
+        git remote rm tmp_source
+        git remote --verbose
