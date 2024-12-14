@@ -1,0 +1,38 @@
+name: Trigger Mirror PR and Repo Sync
+on:
+  pull_request_target:
+      types:
+        - closed
+      branches:
+        - current
+
+env:
+  GH_TOKEN: ${{ secrets.PAT }}
+
+concurrency:
+  group: trigger-pr-mirror-repo-sync-${{ github.event.pull_request.base.ref }}
+  cancel-in-progress: false
+jobs:
+  trigger-mirror-pr-repo-sync:
+    if: ${{ github.repository_owner == 'vyos' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+
+    steps:
+    - name: Bullfrog Secure Runner
+      uses: bullfrogsec/bullfrog@v0
+      with:
+        egress-policy: audit
+
+    - name: Trigger repo sync
+      shell: bash
+      run: |
+        echo "Triggering sync workflow for ${{ secrets.REMOTE_OWNER }}/${{ secrets.REMOTE_REPO }}"
+        echo "Triggering sync workflow with PAT ${{ secrets.PAT }}"
+        curl -X POST \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: Bearer ${{ secrets.PAT }}" \
+          https://api.github.com/repos/${{ secrets.REMOTE_OWNER }}/${{ secrets.REMOTE_REPO }}/actions/workflows/mirror-pr-and-sync.yml/dispatches \
+          -d '{"ref":"${{ github.event.pull_request.base.ref }}", "inputs": {"pr_number": "${{  github.event.pull_request.number }}", "sync_branch": "${{ github.event.pull_request.base.ref }}"}}'
