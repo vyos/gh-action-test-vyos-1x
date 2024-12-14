@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   delete_branch:
-    if: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.event.pull_request.head.ref, 'mirror/')) && github.repository_owner != 'vyos' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.event.pull_request.head.ref, 'mirror/current/')) && github.repository_owner != 'vyos' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -26,8 +26,8 @@ jobs:
       - name: Delete branch
         run: |
           branch=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.branch || github.event.pull_request.head.ref }}
-          if [[ $branch != mirror/* ]]; then
-            echo "Branch name to clean must start with 'mirror/'"
+          if [[ $branch != mirror/current/* ]]; then
+            echo "Branch name to clean must start with 'mirror/current/'"
             exit 1
           fi
           repo=${{ github.repository }}
