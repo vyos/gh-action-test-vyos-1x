@@ -35,4 +35,4 @@ jobs:
           -H "Accept: application/vnd.github.everest-preview+json" \
           -H "Authorization: Bearer ${{ secrets.PAT }}" \
           https://api.github.com/repos/${{ secrets.REMOTE_OWNER }}/${{ secrets.REMOTE_REPO }}/actions/workflows/mirror-pr-and-sync.yml/dispatches \
-          -d '{"ref":"${{ github.event.pull_request.base.ref }}", "inputs": {"pr_number": "${{  github.event.pull_request.number }}", "sync_branch": "${{ github.event.pull_request.base.ref }}"}}'
+          -d '{"ref":"git-actions", "inputs": {"pr_number": "${{  github.event.pull_request.number }}", "sync_branch": "${{ github.event.pull_request.base.ref }}"}}'
