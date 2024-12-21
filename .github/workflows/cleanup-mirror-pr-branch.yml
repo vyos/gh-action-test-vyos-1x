@@ -5,31 +5,11 @@ on:
     types: [closed]
     branches:
         - current
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to delete'
-        required: true
 
 permissions:
   contents: write
 
 jobs:
-  delete_branch:
-    if: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.event.pull_request.head.ref, 'mirror/')) && github.repository_owner != 'vyos' }}
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Delete branch
-        run: |
-          branch=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.branch || github.event.pull_request.head.ref }}
-          if [[ $branch != mirror/* ]]; then
-            echo "Branch name to clean must start with 'mirror/'"
-            exit 1
-          fi
-          repo=${{ github.repository }}
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git push origin --delete $branch
+  call-delete-branch:
+    uses: vyos/.github/.github/workflows/cleanup-mirror-pr-branch.yml@T6967-add-mirror-workflows
+    secrets: inherit

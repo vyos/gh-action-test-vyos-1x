@@ -10,7 +10,6 @@ on:
 
 jobs:
   get_repo_name:
-    if: ${{ github.repository_owner != 'vyos' }}
     runs-on: ubuntu-latest
     outputs:
       PACKAGE_NAME: ${{ steps.package_name.outputs.PACKAGE_NAME }}
@@ -21,7 +20,6 @@ jobs:
           echo "PACKAGE_NAME=$(basename ${{ github.repository }})" >> $GITHUB_OUTPUT
 
   trigger-build:
-    if: ${{ github.repository_owner != 'vyos' }}
     needs: get_repo_name
     uses: vyos/.github/.github/workflows/trigger-rebuild-repo-package.yml@current
     with:

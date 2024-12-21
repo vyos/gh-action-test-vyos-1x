@@ -1,0 +1,24 @@
+name: Create Mirror PR and Repo Sync
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Source repo PR Number'
+        required: true
+        type: number
+      sync_branch:
+        description: 'branch to sync'
+        required: true
+        type: string
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  call-mirror-pr-and-sync:
+    uses: vyos/.github/.github/workflows/mirror-pr-and-sync.yml@T6967-add-mirror-workflows
+    secrets: inherit
+    with:
+      pr_number: ${{ inputs.pr_number }}
+      sync_branch: ${{ inputs.sync_branch }}
