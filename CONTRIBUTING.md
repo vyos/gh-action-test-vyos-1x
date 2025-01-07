@@ -2,6 +2,7 @@
 
 You wan't to help us improve VyOS? This is awesome!
 err test 4
+err test 5
 
 We accept any kind of Pull Requests on GitHub. In order to get your changes into
 the main repository as smooth as possible please take yourself some time and
