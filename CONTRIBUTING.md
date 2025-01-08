@@ -13,6 +13,7 @@ m l test 6 a
 m l test 6 b
 m l test 7 a
 m l test 7 b
+m l test 8 a
 
 We accept any kind of Pull Requests on GitHub. In order to get your changes into
 the main repository as smooth as possible please take yourself some time and
