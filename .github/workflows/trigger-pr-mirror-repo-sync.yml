@@ -8,5 +8,6 @@ on:
 
 jobs:
   call-trigger-mirror-pr-repo-sync:
-    uses: vyos/.github/.github/workflows/trigger-pr-mirror-repo-sync.yml@T6967-add-mirror-workflows
+    if: github.repository_owner == 'vyos'
+    uses: vyos/.github/.github/workflows/trigger-pr-mirror-repo-sync.yml@current
     secrets: inherit
