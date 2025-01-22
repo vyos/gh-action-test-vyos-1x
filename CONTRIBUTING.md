@@ -1,22 +1,7 @@
 # Contributing to VyOS
 
 You wan't to help us improve VyOS? This is awesome!
-m l test 1
-m l test 2
-m l test 3 a
-m l test 3 b
-m l test 4 a
-m l test 4 b
-m l test 5 a
-m l test 5 b
-m l test 6 a
-m l test 6 b
-m l test 7 a
-m l test 7 b
-m l test 8 a
-m l test 8 b
-m l test 9 a
-m l test 9 b
+m gha l test 1
 
 We accept any kind of Pull Requests on GitHub. In order to get your changes into
 the main repository as smooth as possible please take yourself some time and
